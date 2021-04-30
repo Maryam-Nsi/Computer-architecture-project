@@ -1,5 +1,0 @@
-Instruction Set
-4 bit => OPcode
-2 bit => Register source
-2 bit => Register destination
-8 bit => Immediate
