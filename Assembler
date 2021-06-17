@@ -1,0 +1,260 @@
+#include<iostream>
+#include<string>
+#include<sstream>
+#include<string.h>
+#include<math.h>
+#include<fstream>
+#include <bits/stdc++.h>
+
+using namespace std;
+
+bool flag = true;
+
+string mabna10_2(string R2) {
+    int x = 0, m = 0, p = 0;
+    int r2;
+    string final;
+    r2 = stoi(R2);
+    if (r2 == 1 || r2 == 0)
+        final = "0000000";
+    else if (r2 < 4)
+        final = "000000";
+    else if (r2 < 8)
+        final = "00000";
+    else if (r2 < 16)
+        final = "0000";
+    else if (r2 < 32)
+        final = "000";
+    else if (r2 < 64)
+        final = "00";
+    else if (r2 < 128)
+        final = "0";
+    else if (r2 < 256)
+        final = "";
+    while (r2 > 0)
+    {
+        x = r2 % 2;
+        r2 /= 2;
+        m += x * pow(10, p);
+        p++;
+    };
+    return final += to_string(m);
+}
+
+string opcode(string operation) {
+    if (operation == "ADD")
+        operation = "0000";
+    else if (operation == "ADDI")
+        operation = "0001";
+    else if (operation == "SUB")
+        operation = "0010";
+    else if (operation == "SUBI")
+        operation = "0011";
+    else if (operation == "AND")
+        operation = "0100";
+    else if (operation == "ANDI")
+        operation = "0101";
+    else if (operation == "OR")
+        operation = "0110";
+    else if (operation == "ORI")
+        operation = "0111";
+    else if (operation == "LW")
+        operation = "1000";
+    else if (operation == "SW")
+        operation = "1001";
+    else if (operation == "BEQ")
+        operation = "1010";
+    else if (operation == "JUMP")
+        operation = "1011";
+    else if (operation == "SLT")
+        operation = "1100";
+    else if (operation == "XOR")
+        operation = "1101";
+    else if (operation == "NOR")
+        operation = "1110";
+    else if (operation == "MOVE")
+        operation = "1111";
+    else
+        operation = "2";
+    return operation;
+}
+
+string Register_Destination(string R1) {
+    if (R1 == "RegA")
+        R1 = "00";
+    else if (R1 == "RegB")
+        R1 = "01";
+    else if (R1 == "RegC")
+        R1 = "10";
+    else if (R1 == "RegD")
+        R1 = "11";
+    else
+        R1 = "2";
+    return R1;
+}
+
+string Register_Source(string R2) {
+    if (R2 == "RegA")
+        R2 = "00";
+    else if (R2 == "RegB")
+        R2 = "01";
+    else if (R2 == "RegC")
+        R2 = "10";
+    else if (R2 == "RegD")
+        R2 = "11";
+    else {
+        R2 = "00";
+        flag = false;
+    }
+    return R2;
+}
+
+string Immediate(string R2) {
+    if (flag)
+        return "11111111";
+    else {
+        return mabna10_2(R2);
+    }
+}
+
+string temp(string final) {
+    if (final == "0000")
+        return "0";
+    else if (final == "0001")
+        return "1";
+    else if (final == "0010")
+        return "2";
+    else if (final == "0011")
+        return "3";
+    else if (final == "0100")
+        return "4";
+    else if (final == "0101")
+        return "5";
+    else if (final == "0110")
+        return "6";
+    else if (final == "0111")
+        return "7";
+    else if (final == "1000")
+        return "8";
+    else if (final == "1001")
+        return "9";
+    else if (final == "1010")
+        return "A";
+    else if (final == "1011")
+        return "B";
+    else if (final == "1100")
+        return "C";
+    else if (final == "1101")
+        return "D";
+    else if (final == "1110")
+        return "E";
+    else if (final == "1111")
+        return "F";
+    return "";
+}
+
+string mabna2_16(string instruction) {
+    string final = "", final_final = "";
+    final += instruction[0];
+    final += instruction[1];
+    final += instruction[2];
+    final += instruction[3];
+    final_final += temp(final);
+    final = "";
+    final += instruction[4];
+    final += instruction[5];
+    final += instruction[6];
+    final += instruction[7];
+    final_final += temp(final);
+    final = "";
+    final += instruction[8];
+    final += instruction[9];
+    final += instruction[10];
+    final += instruction[11];
+    final_final += temp(final);
+    final = "";
+    final += instruction[12];
+    final += instruction[13];
+    final += instruction[14];
+    final += instruction[15];
+    final_final += temp(final);
+    return final_final;
+}
+
+int main() {
+    ifstream file("Fibo.txt");
+    string line;
+    string R1="", R2="", instruction = "", operation="", offset="";
+    int i , j , k , t;
+    if (file.is_open())
+    {
+        while (getline(file, line))
+        {
+            instruction = "";
+            R1 = "";
+            R2 = "";
+            operation = "";
+            offset = "";
+            int siz=line.size();
+            for(i=0 ; i<siz ; i++)
+            {
+                if(line[i]!=' ')
+                    operation+=line[i];
+                else
+                    break;
+            }
+            flag = true;
+            instruction = "";
+            if(operation[operation.size()-1]== ':')
+            {
+                cout << "FFFF" << endl;
+                continue;
+            }
+            instruction += opcode(operation);
+            if (instruction == "2"){
+                cout << "This command is not defined in the CPU" << endl;
+                continue;
+            }
+            for(j=i+1 ; j<siz ; j++)
+            {
+                if(line[j]!=' ')
+                    R1+=line[j];
+                else
+                    break;
+            }
+            if (Register_Destination(R1) == "2") {
+                instruction += "000011111111";
+                cout << mabna2_16(instruction) << endl;
+                continue;
+            }
+            else {
+                instruction += Register_Destination(R1);
+                for(k=j+1 ; k<siz ; k++)
+                {
+                    if(line[k]!=' ')
+                        R2+=line[k];
+                    else
+                        break;
+                }
+            }
+
+            instruction += Register_Source(R2);
+            if (operation == "LW" || operation == "SW") {
+                for(t=k+1 ; t<siz ; t++)
+                {
+                    if(line[t]!=' ')
+                        offset+=line[t];
+                    else
+                        break;
+                }
+                instruction += Immediate(offset);
+            }
+            else
+                instruction += Immediate(R2);
+            cout << mabna2_16(instruction) << endl;
+
+        }
+    }
+    else
+        cout << "Unable to open this file :(" << endl;
+}
